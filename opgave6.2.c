@@ -25,7 +25,7 @@ int main(void) {
         scanf("%p", &sek);
         input = *sek;
 
-    int hours_minutes_seconds (int *sek, int *uge, int *dag, int *time, int *min);
+        int hours_minutes_seconds (int *sek, int *uge, int *dag, int *time, int *min);
 
         /* Programmet giver endeligt output */
         printf("%d sekunder er tilsvarende %p uger, %p dage, %p timer, %p minutter og %p sekunder \n", input, &uge, &dag, &time, &min, &sek);
