@@ -12,8 +12,7 @@ int main (void){
     printf("Tildelt værdi af n: %d \n", n);
     
 
-    for (i = 0; i <= n; i++)
-    {
+    for (i = 0; i <= n; i++) {
         sum1 += i;
     }
     
@@ -22,10 +21,10 @@ int main (void){
     printf("Value of sum1: %d \n", sum1);
     printf("Value of sum2: %d \n", sum2);
 
-    if (sum1 == sum2)
-    {       
+    if (sum1 == sum2) {       
         printf("True \n");
-    } else {
+    } 
+    else {
         printf("False \n");
     }
 

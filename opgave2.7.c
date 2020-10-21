@@ -15,6 +15,6 @@ int main(void) {
 
   printf("There are %d students pr. group.\n", average_pr_group);
   printf("There are %d students pr. class.\n", average_pr_course);
-  
+
   return EXIT_SUCCESS;
 }
