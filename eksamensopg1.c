@@ -1,4 +1,6 @@
 /* Mike Jensen - Eksamensopgave 1 */
+/* maltow20@student.aau.dk */
+/* A400b Software */
 /* Jeg fik hjælp af min studiegruppe til brugen af pointers i min kode, men er stadig frisk på at forsvare det til eksamen */
 
 /* Inkluderer biblioteker */
