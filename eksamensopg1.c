@@ -67,19 +67,22 @@ double do_next_op(double *akkumulatoren, double *operant, char *operator){
         case '*' :
             *akkumulatoren = *akkumulatoren * *operant; break;
         case '/' :
-            *akkumulatoren = *akkumulatoren / *operant; break;
+        if(*akkumulatoren != 0){
+            *akkumulatoren = *akkumulatoren / *operant;
+        } break;
         case '^' :
             *akkumulatoren = pow(*akkumulatoren, *operant); break;
         
         /* Unære operatorer */
         case '#' : /* Da det er antageligt, at vi ikke arbejder med irrationelle tal i denne kode, så sker der intet med tallet, når kvadratroden tages af en negativ værdi */
             if (*akkumulatoren < 0){
-            } else
-            *akkumulatoren = sqrt(*akkumulatoren); break;
+            } else *akkumulatoren = sqrt(*akkumulatoren); break;
         case '%' :
             *akkumulatoren = *akkumulatoren * -1; break;
         case '!' :
-            *akkumulatoren = 1 / *akkumulatoren; break;
+            if (*akkumulatoren != 0){
+                *akkumulatoren = 1 / *akkumulatoren; 
+            } break;
 
         default:
             break;
