@@ -10,12 +10,13 @@
 
 /* Programmets funktioner precalles, så programmet ved de er der */
 double run_calculator();
-double scan_data(char *operator, double *operant);
-double do_next_op(double *akkumulatoren, double *operant, char *operator);
+void scan_data(char *operator, double *operant);
+void do_next_op(double *akkumulatoren, double *operant, char *operator);
 
 /* Her starter lommeregner ved kald af dens funktion */
-void main(){
+int main(){
     run_calculator();
+    return(0);
 }
 
 /* Denne funktion opfører sig som main, hvor alle funktionerne kaldes, indtil en ønsket værdi er opnået */
@@ -35,16 +36,16 @@ double run_calculator(){
         
         /* Løbende eller endeligt resultat udskrives */
         if(operator != 'q'){
-            printf("Result so far is %lf\n", akkumulatoren);
+            printf("Result so far is %f\n", akkumulatoren);
         } else {
-            printf("Final result is: %lf\n", akkumulatoren);
+            printf("Final result is: %f\n", akkumulatoren);
         }
     }
     return(akkumulatoren);
 }
 
 /* Denne funktion scanner input */
-double scan_data(char *operator, double *operant){
+void scan_data(char *operator, double *operant){
 
     /* Først indtastes en operator */
     printf("Enter operator, and an optional operand: ");
@@ -57,7 +58,7 @@ double scan_data(char *operator, double *operant){
 }
 
 /* Denne funktion behandler vores input */
-double do_next_op(double *akkumulatoren, double *operant, char *operator){
+void do_next_op(double *akkumulatoren, double *operant, char *operator){
     
     /* Dette switch case kigger på hvilken operator vi har givet som input, og giver en tilpasset udregning */
     switch (*operator) {
