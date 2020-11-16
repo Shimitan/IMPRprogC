@@ -8,24 +8,31 @@
 #include <stdio.h>
 #include <time.h>
 
-/* Programmets funktioner precalles, så programmet ved de er der */
-int* allocation_of_array(int antalTerninger);
-int roll_multiple_dice(int antalTerninger, int antalKast, int *kast);
+#define ANTAL_SPIL 16
 
-int main(int *terninger, int *kast){
+enum udfald{Ones, Twos, Threes, Fours, Fives, Sixes, onePair, twoPair, threeKind, fourKind, smallStraight, largeStraight, fullHouse, Chance, Yatzy};
+
+/* Programmets funktioner precalles, så programmet ved de er der */
+int* allocation_of_memory(int antalTerninger);
+int roll_multiple_dice(int antalTerninger, int *kast);
+
+int main(int *terninger, int *kast, int *score){
     
     srand(time(NULL));
-    int antalTerninger = 5, antalKast = 2;
+    int antalTerninger = 5;
     
-
     /*printf("Hvor mange terninger?(mindst 5) ");
-    scanf("%d", &antalTerninger);
+    scanf("%d", &antalTerninger);*/
 
-    printf("Hvor mange kast?(mindst 1) ");
-    scanf("%d", &antalKast);  */
+    kast = allocation_of_memory(antalTerninger);
+    score = allocation_of_memory(ANTAL_SPIL);
 
-    allocation_of_array(antalTerninger);
-    roll_multiple_dice(antalTerninger, antalKast, kast);
+    if(kast == NULL || score == NULL){
+        printf("Kan ikke allokere hukkomelse.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    roll_multiple_dice(antalTerninger, kast);
 
     free(kast);
     kast = NULL;
@@ -33,24 +40,18 @@ int main(int *terninger, int *kast){
     return(0);
 }
 
-int* allocation_of_array(int antalTerninger){
-
-    int *kast = (int*)malloc(antalTerninger * sizeof(int));
-
-    if(kast == NULL){
-        printf("Kan ikke allokere hukkomelse.\n");
-        exit(EXIT_FAILURE);
-    }
-    return kast;
+int* allocation_of_memory(int antalTerninger){
+    int *allocate = (int*)malloc(antalTerninger * sizeof(int));
+    return allocate;
 }
 
-int roll_multiple_dice(int antalTerninger, int antalKast, int *kast){
-    for(int k = 0; k < antalKast; k++){
+int roll_multiple_dice(int antalTerninger, int *kast){
+    //for(int k = 0; k < ANTAL_SPIL; k++){
         for(int i = 0; i < antalTerninger; i++){
             kast[i] = (double)(rand() % 6 + 1);
             printf("%d ", kast[i]);
         }
         printf("\n");
-    }
+    //}
 }
     
