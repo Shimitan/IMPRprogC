@@ -9,7 +9,7 @@ struct card{
 };
 typedef struct card card;
 
-enum suits{clubs, diamonds, hearts, spades};
+enum suits{clubs, diamonds, hearts, spades, jokersuit};
 enum pips{two, three, four, five, six, seven, eight, nine, ten, jack, queen, king, ace, joker};
 
 int compare(const void *p1, const void *p2);
@@ -19,13 +19,13 @@ int main(void) {
     
     int j, i, k;
     struct card cardSet[TOTAL_CARDS];
-    printf("her1");
+
     for (j = 0; j < 3; j++){
         cardSet[j].pip = joker;
-        cardSet[j].suit = joker;
+        cardSet[j].suit = jokersuit;
     }
     
-    for (k = spades; k >= diamonds; k--){
+    for (k = spades; k >= clubs; k--){
         for (i = ace; i >= two; i--){
             cardSet[j].pip = i;
             cardSet[j].suit = k;
@@ -60,10 +60,10 @@ int compare(const void *p1, const void *p2){
 }
 
 void printfnc(card cardSet[]){
-    char *suits[] = {"clubs", "diamonds", "hearts", "spades"}, 
+    char *suits[] = {"clubs", "diamonds", "hearts", "spades", "jokersuit"}, 
     *pips[] = {"two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace", "joker"};
     int i;
     for (i = 0; i < TOTAL_CARDS; i++){
-        printf("%s %s", suits[cardSet[i].suit], pips[cardSet[i].pip]);
+        printf("%s %s\n", suits[cardSet[i].suit], pips[cardSet[i].pip]);
     }
 }
