@@ -56,12 +56,15 @@ int roll_multiple_dice(int antalTerninger, int *kast){
         }
 }
 
+/* Her spilles alle de forskellige spil som er i yatzy */
 int play_yatzy(int antalTerninger, int *kast, int *score){
 
     int i, j, k, temp;
 
-    for (i = Ones; i <= ANTAL_SPIL; i++)
-    {
+    /* Forlykken sikrer sig alle spil gennemføres, hvor den starter ved spil et */
+    for (i = Ones; i <= ANTAL_SPIL; i++){
+
+        /* Der kastes n-antal terninger */
         roll_multiple_dice(antalTerninger, kast);
         switch (i){
             case Ones:
@@ -117,7 +120,7 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 }
                 printf("%6d\n", *(score + i));
 
-
+                /* Her beregnes bonusen, hvis spil 1-6 er over 62 */
                 for (j = Ones; j <= Sixes; j++){
                     temp += *(score + j);
                 }
@@ -142,11 +145,11 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 break;
 
             case twoPair:
-                *(score + i) = find_pair2(antalTerninger, kast);
                 printf("%-12s", "To par");
                 for (j = 0; j < antalTerninger; j++){
                     printf("%d ", *(kast + j));
                 }
+                *(score + i) = find_pair2(antalTerninger, kast);
                 printf("%6d\n", *(score + i));
                 break;
                 
@@ -157,7 +160,7 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
     }
 }
 
-
+/* Finder gentagelser af tal op til 5 gange i et array */
 int find_number(int antalTerninger, int *kast, int tal){
     
     int score = 0, count = 0;
@@ -173,6 +176,7 @@ int find_number(int antalTerninger, int *kast, int tal){
 }
 
 /* Compare funktion taget fra Kurts powerpoint slide */
+/* En lille ændring er, at denne funktion sammenligner omvendt, for at sortere efter størst først */
 int int_compare(const void *p1, const void *p2){
     int result, *ip1 = (int *) p1, *ip2 = (int *) p2;
     if (*ip1 > *ip2){
@@ -187,13 +191,15 @@ int int_compare(const void *p1, const void *p2){
     return result;
 }
 
+/* Finder det største par i et array */
 int find_pair1(int antalTerninger, int *kast){
 
     int score = 0;
 
-
+    /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
 
+    /* Finder ud af om 2 sammenhængende tal er ens */
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+1]){
             score = kast[i]*2;
@@ -203,18 +209,44 @@ int find_pair1(int antalTerninger, int *kast){
     return score;
 }
 
+/* Finder de to største par i et array */
 int find_pair2(int antalTerninger, int *kast){
 
-    int score = 0;
+    int score = 0, score1 = 0, score2 = 0;
 
-
+    /* Finder første par */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+1]){
-            score = kast[i]*2;
+            score1 = kast[i]*2;
             break;
         }
     } 
+
+    /* Sætter første pars værdier til 0, så parret ikke gentages */
+    for (int i = 0; i < antalTerninger; i++){
+        if (kast[i] == kast[i+1]){
+            kast[i] = 0;
+            kast[i+1] = 0;
+            break;
+        }
+    }
+
+    /* Finder andet par */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+    for (int i = 0; i <= antalTerninger; i++){
+        if (kast[i] == kast[i+1]){
+            score2 = kast[i]*2;
+            break;
+        }
+    }
+
+    /* Score variablen ændres kun, hvis den har fundet to par */
+    if (score1 != 0 && score2 != 0){
+        score = score1 + score2;
+    } 
+    else{
+        score = 0;
+    }
     return score;
 }
