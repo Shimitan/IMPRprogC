@@ -20,6 +20,13 @@ int find_number(int antalTerninger, int *kast, int tal);
 int int_compare(const void *p1, const void *p2);
 int find_pair1(int antalTerninger, int *kast);
 int find_pair2(int antalTerninger, int *kast);
+int find_threeKind(int antalTerninger, int *kast);
+int find_fourKind(int antalTerninger, int *kast);
+int find_smallStraight(int antalTerninger, int *kast);
+int find_largeStraight(int antalTerninger, int *kast);
+int find_fullHouse(int antalTerninger, int *kast);
+int find_chance(int antalTerninger, int *kast);
+int find_yatzy(int antalTerninger, int *kast);
 
 int main(int *terninger, int *kast, int *score){
     
@@ -136,11 +143,11 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 break;
 
             case onePair:
-                *(score + i) = find_pair1(antalTerninger, kast);
                 printf("%-12s", "Et par");
                 for (j = 0; j < antalTerninger; j++){
                     printf("%d ", *(kast + j));
                 }
+                *(score + i) = find_pair1(antalTerninger, kast);
                 printf("%6d\n", *(score + i));
                 break;
 
@@ -153,11 +160,78 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 printf("%6d\n", *(score + i));
                 break;
                 
+             case threeKind:
+                printf("%-12s", "Tre ens");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_threeKind(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
             
+            case fourKind:
+                printf("%-12s", "Fire ens");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_fourKind(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
+            case smallStraight:
+                printf("%-12s", "Lav");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_smallStraight(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
+            case largeStraight:
+                printf("%-13s", "Høj");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_largeStraight(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
+            case fullHouse:
+                printf("%-12s", "Fuld hus");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_fullHouse(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
+            case Chance:
+                printf("%-12s", "Chance");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_chance(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
+            case Yatzy:
+                printf("%-12s", "Yatzy");
+                for (j = 0; j < antalTerninger; j++){
+                    printf("%d ", *(kast + j));
+                }
+                *(score + i) = find_yatzy(antalTerninger, kast);
+                printf("%6d\n", *(score + i));
+                break;
+
             default:
                 break;
         }
     }
+    temp = 0;
+    for (j = Ones; j <= Yatzy; j++){
+        temp += *(score + j);
+    }
+    printf("Total: %d\n", temp);
 }
 
 /* Finder gentagelser af tal op til 5 gange i et array */
@@ -248,5 +322,112 @@ int find_pair2(int antalTerninger, int *kast){
     else{
         score = 0;
     }
+    return score;
+}
+
+int find_threeKind(int antalTerninger, int *kast){
+
+    int score = 0;
+
+    /* Sorterer listen fra størst til mindst */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+
+    /* Finder ud af om 2 sammenhængende tal er ens */
+    for (int i = 0; i <= antalTerninger; i++){
+        if (kast[i] == kast[i+2]){
+            score = kast[i]*3;
+            break;
+        }
+    } 
+    return score;
+}
+
+int find_fourKind(int antalTerninger, int *kast){
+
+    int score = 0;
+
+    /* Sorterer listen fra størst til mindst */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);    
+
+    /* Finder ud af om 2 sammenhængende tal er ens */
+    for (int i = 0; i <= antalTerninger; i++){
+        if (kast[i] == kast[i+3]){
+            score = kast[i]*4;
+            break;
+        }
+    } 
+    return score;
+}
+
+int find_smallStraight(int antalTerninger, int *kast){
+
+    int score = 0;
+
+   
+    return score;
+}
+
+int find_largeStraight(int antalTerninger, int *kast){
+
+    int score = 0, count = 0;
+    int tal[5] = {6, 5, 4, 3, 2};
+
+    for (int i = antalTerninger; i > 0; i--){
+
+        qsort(kast, antalTerninger, sizeof(int), &int_compare); 
+
+        if (kast[i] == tal[i] && count <= 4){
+            count++;
+
+            for (int i = antalTerninger; i > 0; i--){
+                if (kast[i] == kast[i+1]){
+                    kast[i] = 0;
+                    
+                }
+            }
+        }
+    }
+
+    if (count == 4){
+        score = 20;
+    }
+    
+    return score;
+}
+
+int find_fullHouse(int antalTerninger, int *kast){
+
+    int score = 0;
+
+   
+    return score;
+}
+
+int find_chance(int antalTerninger, int *kast){
+
+    int score = 0;
+
+    /* Sorterer listen fra størst til mindst */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);    
+    for (int i = 0; i < 5; i++){
+        score += kast[i];
+    } 
+    return score;
+}
+
+int find_yatzy(int antalTerninger, int *kast){
+
+    int score = 0;
+
+    /* Sorterer listen fra størst til mindst */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+
+    /* Finder ud af om 2 sammenhængende tal er ens */
+    for (int i = 0; i <= antalTerninger; i++){
+        if (kast[i] == kast[i+4]){
+            score = kast[i]*5;
+            break;
+        }
+    } 
     return score;
 }
