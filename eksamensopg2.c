@@ -22,41 +22,58 @@ int find_pair1(int antalTerninger, int *kast);
 int find_pair2(int antalTerninger, int *kast);
 int find_threeKind(int antalTerninger, int *kast);
 int find_fourKind(int antalTerninger, int *kast);
-int find_smallStraight(int antalTerninger, int *kast);
-int find_largeStraight(int antalTerninger, int *kast);
+int find_smallStraight(int antalTerninger, int *kast, int tal);
+int find_largeStraight(int antalTerninger, int *kast, int tal);
 int find_fullHouse(int antalTerninger, int *kast);
 int find_chance(int antalTerninger, int *kast);
 int find_yatzy(int antalTerninger, int *kast);
 
 int main(int *terninger, int *kast, int *score){
-    
     srand(time(NULL));
-    int antalTerninger = 5;
-    
-    /*printf("Hvor mange terninger?(mindst 5) ");
-    scanf("%d", &antalTerninger);*/
+    int antalTerninger = 0, done = 0;
+    char svar;
+    while (!done){
 
-    kast = allocation_of_memory(antalTerninger);
-    score = allocation_of_memory(ANTAL_SPIL);
+        /* Input scannes */
+        printf("Hvor mange terninger?(mindst 5) ");
+        scanf("%d", &antalTerninger);
+        while(antalTerninger < 5){
+            printf("Prøv igen (mindst 5 terninger) ");
+            scanf("%d", &antalTerninger);
+        }
+        
+        /* Der gøres plads i hukkomelsen til mit terningekast og hvad scoren er på */
+        kast = allocation_of_memory(antalTerninger);
+        score = allocation_of_memory(ANTAL_SPIL);
+        if(kast == NULL || score == NULL){
+            printf("Kan ikke allokere hukkomelse.\n");
+            exit(EXIT_FAILURE);
+        }
 
-    if(kast == NULL || score == NULL){
-        printf("Kan ikke allokere hukkomelse.\n");
-        exit(EXIT_FAILURE);
+        /* Yatzy spilles */
+        play_yatzy(antalTerninger, kast, score);
+
+        /* Når spillet er færdi, så befries brugt hukkomelse */
+        free(kast);
+        kast = NULL;
+        free(score);
+        score = NULL;
+
+        /* Spørger om genspil */
+        printf("\nSpil igen? (y/n)\n");
+        scanf(" %c", &svar);
+        done = (svar == 'n' ? 1 : 0);
     }
-
-    play_yatzy(antalTerninger, kast, score);
-
-    free(kast);
-    kast = NULL;
-
     return(0);
 }
 
+/* Her allokeres hukkomelse ift. antal terninger */
 int* allocation_of_memory(int antalTerninger){
     int *allocate = (int*)malloc(antalTerninger * sizeof(int));
     return allocate;
 }
 
+/* Array med n antal terninger laves */
 int roll_multiple_dice(int antalTerninger, int *kast){
         for(int i = 0; i < antalTerninger; i++){
             kast[i] = (double)(rand() % 6 + 1);
@@ -183,7 +200,7 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 for (j = 0; j < antalTerninger; j++){
                     printf("%d ", *(kast + j));
                 }
-                *(score + i) = find_smallStraight(antalTerninger, kast);
+                *(score + i) = find_smallStraight(antalTerninger, kast, 1);
                 printf("%6d\n", *(score + i));
                 break;
 
@@ -192,7 +209,7 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
                 for (j = 0; j < antalTerninger; j++){
                     printf("%d ", *(kast + j));
                 }
-                *(score + i) = find_largeStraight(antalTerninger, kast);
+                *(score + i) = find_largeStraight(antalTerninger, kast, 2);
                 printf("%6d\n", *(score + i));
                 break;
 
@@ -236,9 +253,7 @@ int play_yatzy(int antalTerninger, int *kast, int *score){
 
 /* Finder gentagelser af tal op til 5 gange i et array */
 int find_number(int antalTerninger, int *kast, int tal){
-    
     int score = 0, count = 0;
-
     for (int i = 0; i <= antalTerninger; i++){
             if (kast[i] == tal && count <= 4){
                 score++;
@@ -267,12 +282,9 @@ int int_compare(const void *p1, const void *p2){
 
 /* Finder det største par i et array */
 int find_pair1(int antalTerninger, int *kast){
-
     int score = 0;
-
     /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-
     /* Finder ud af om 2 sammenhængende tal er ens */
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+1]){
@@ -285,36 +297,33 @@ int find_pair1(int antalTerninger, int *kast){
 
 /* Finder de to største par i et array */
 int find_pair2(int antalTerninger, int *kast){
-
-    int score = 0, score1 = 0, score2 = 0;
-
+    int score = 0, score1 = 0, score2 = 0, i;
     /* Finder første par */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-    for (int i = 0; i <= antalTerninger; i++){
+    for (i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+1]){
             score1 = kast[i]*2;
             break;
         }
     } 
-
     /* Sætter første pars værdier til 0, så parret ikke gentages */
-    for (int i = 0; i < antalTerninger; i++){
-        if (kast[i] == kast[i+1]){
-            kast[i] = 0;
-            kast[i+1] = 0;
+    for (int k = 0; k < antalTerninger; k++){
+        if (kast[k] == kast[k+1]){
+            kast[k] = 0;
+            kast[k+1] = 0;
             break;
         }
     }
-
     /* Finder andet par */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-    for (int i = 0; i <= antalTerninger; i++){
-        if (kast[i] == kast[i+1]){
-            score2 = kast[i]*2;
-            break;
+    for (int j = 0; j <= antalTerninger; j++){
+        if (kast[j] != kast[i]){
+            if (kast[j] == kast[j+1]){
+                score2 = kast[j]*2;
+                break;
+            }
         }
     }
-
     /* Score variablen ændres kun, hvis den har fundet to par */
     if (score1 != 0 && score2 != 0){
         score = score1 + score2;
@@ -325,13 +334,11 @@ int find_pair2(int antalTerninger, int *kast){
     return score;
 }
 
+/* Finder tre ens */
 int find_threeKind(int antalTerninger, int *kast){
-
     int score = 0;
-
     /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-
     /* Finder ud af om 2 sammenhængende tal er ens */
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+2]){
@@ -342,13 +349,11 @@ int find_threeKind(int antalTerninger, int *kast){
     return score;
 }
 
+/* Finder fire ens */
 int find_fourKind(int antalTerninger, int *kast){
-
     int score = 0;
-
     /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);    
-
     /* Finder ud af om 2 sammenhængende tal er ens */
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+3]){
@@ -359,54 +364,84 @@ int find_fourKind(int antalTerninger, int *kast){
     return score;
 }
 
-int find_smallStraight(int antalTerninger, int *kast){
-
+/* Fik hjælp af et gruppemedlem, til løsningen af smallStraight og largeStraight funktionerne, ift. brugen af binary search */
+/* Finder lille straight (1,2,3,4,5)*/
+int find_smallStraight(int antalTerninger, int *kast, int tal){
     int score = 0;
-
-   
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+    for (int i = tal; i <= (tal + 4); i++){
+        if (bsearch(&i, kast, antalTerninger, sizeof(int), &int_compare) != NULL){
+            score += i;
+        }
+        else {
+            score = 0;
+            break;
+        }        
+    }
     return score;
 }
 
-int find_largeStraight(int antalTerninger, int *kast){
+/* Finder stor straight (2,3,4,5,6) */
+int find_largeStraight(int antalTerninger, int *kast, int tal){
 
-    int score = 0, count = 0;
-    int tal[5] = {6, 5, 4, 3, 2};
+    int score = 0;
 
-    for (int i = antalTerninger; i > 0; i--){
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+    for (int i = tal; i <= (tal + 4); i++){
+        if (bsearch(&i, kast, antalTerninger, sizeof(int), &int_compare) != NULL){
+            score += i;
+        }
+        else {
+            score = 0;
+            break;
+        }        
+    }
+    return score;
+}
 
-        qsort(kast, antalTerninger, sizeof(int), &int_compare); 
-
-        if (kast[i] == tal[i] && count <= 4){
-            count++;
-
-            for (int i = antalTerninger; i > 0; i--){
-                if (kast[i] == kast[i+1]){
-                    kast[i] = 0;
-                    
-                }
+/* Finder fuld hus */
+int find_fullHouse(int antalTerninger, int *kast){
+    int score = 0, score1, score2, i;
+    /* Finder største 3-ens */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+    for (i = 0; i <= antalTerninger; i++){
+        if (kast[i] == kast[i+2]){
+            score1 = kast[i]*3;
+            break;
+        }
+    } 
+    /* Sætter største 3-ens værdier til 0, så de ikke kan genbruges */
+    for (int k = 0; k < antalTerninger; k++){
+        if (kast[k] == kast[k+2]){
+            kast[k] = 0;
+            kast[k+1] = 0;
+            kast[k+2] = 0;
+            break;
+        }
+    }
+    /* Finder største par, som ikke har samme øjne som største 3-ens */
+    qsort(kast, antalTerninger, sizeof(int), &int_compare);
+    for (int j = 0; j <= antalTerninger; j++){
+        if (kast[j] != kast[i]){
+            if (kast[j] == kast[j+1]){
+                score2 = kast[j]*2;
+                break;
             }
         }
     }
-
-    if (count == 4){
-        score = 20;
+    /* Score variablen ændres kun, hvis den har fundet to par */
+    if (score1 != 0 && score2 != 0){
+        score = score1 + score2;
+    } 
+    else{
+        score = 0;
     }
-    
     return score;
 }
 
-int find_fullHouse(int antalTerninger, int *kast){
-
-    int score = 0;
-
-   
-    return score;
-}
-
+/* Finder chancen */
 int find_chance(int antalTerninger, int *kast){
-
     int score = 0;
-
     /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);    
     for (int i = 0; i < 5; i++){
@@ -415,17 +450,15 @@ int find_chance(int antalTerninger, int *kast){
     return score;
 }
 
+/* Finder fire ens */
 int find_yatzy(int antalTerninger, int *kast){
-
     int score = 0;
-
     /* Sorterer listen fra størst til mindst */
     qsort(kast, antalTerninger, sizeof(int), &int_compare);
-
     /* Finder ud af om 2 sammenhængende tal er ens */
     for (int i = 0; i <= antalTerninger; i++){
         if (kast[i] == kast[i+4]){
-            score = kast[i]*5;
+            score = kast[i]*5 + 50;
             break;
         }
     } 
