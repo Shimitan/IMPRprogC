@@ -450,7 +450,7 @@ int find_chance(int antalTerninger, int *kast){
     return score;
 }
 
-/* Finder fire ens */
+/* Finder yatzy ens */
 int find_yatzy(int antalTerninger, int *kast){
     int score = 0;
     /* Sorterer listen fra størst til mindst */
