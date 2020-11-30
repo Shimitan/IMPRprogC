@@ -30,7 +30,7 @@ int read_data(){
     char buff[1000];
     FILE *fp;
 
-    struct person people[NUMBER_OF_PEOPLE];
+    person people[NUMBER_OF_PEOPLE];
 
     fp = fopen("files/personer13.5.txt", "r");
 
