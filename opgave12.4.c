@@ -18,14 +18,14 @@ enum suits{clubs, diamonds, hearts, spades, jokersuit};
 enum pips{two, three, four, five, six, seven, eight, nine, ten, jack, queen, king, ace, joker};
 
 /* precaller funktioner som prototyper */
-int compare(const void *p1, const void *p2);
-void printfnc(card cardSet[]);
+int compare_cards(const void *p1, const void *p2);
+void print_function(card cardSet[]);
 
 /* Her skabes mit array, hvorefter det sorteres og printes */
 int main(void) {
     
     int j, i, k;
-    struct card cardSet[TOTAL_CARDS];
+    card cardSet[TOTAL_CARDS];
 
     /* Indsætter jokere i mit array */
     for (j = 0; j < 3; j++){
@@ -40,15 +40,17 @@ int main(void) {
             j++;
         }
     }
-    printfnc(cardSet);
-    qsort(cardSet, TOTAL_CARDS, sizeof(card), &compare);
-    printfnc(cardSet);
+    printf("Unsorted Cards:\n");
+    print_function(cardSet);
+    qsort(cardSet, TOTAL_CARDS, sizeof(card), &compare_cards);
+    printf("\nSorted Cards:\n");
+    print_function(cardSet);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /* Denne funktion sammenligner 2 værdier */
-int compare(const void *p1, const void *p2){
+int compare_cards(const void *p1, const void *p2){
     card *cp1 = (card*)p1, *cp2 = (card*)p2;
     int result;
     if (cp1->suit < cp2->suit){
@@ -70,7 +72,7 @@ int compare(const void *p1, const void *p2){
 }
 
 /* Denne funktion printer alle pip med dens tilhørende kulør */
-void printfnc(card cardSet[]){
+void print_function(card cardSet[]){
     char *suits[] = {"clubs", "diamonds", "hearts", "spades", "jokersuit"}, 
     *pips[] = {"two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace", "joker"};
     int i;
