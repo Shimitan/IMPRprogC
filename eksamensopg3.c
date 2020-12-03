@@ -1,7 +1,6 @@
-/* Mike Jensen - Eksamensopgave 1 */
+/* Mike Jensen - Eksamensopgave 3 */
 /* maltow20@student.aau.dk */
 /* A400b Software */
-
 
 /* Biblioteker */
 #include <stdio.h>
@@ -9,9 +8,9 @@
 #include <string.h>
 
 /* Definitioner */
+/* Der antages, at der er 182 kampe spillet af 14 hold */
 #define ANTAL_KAMPE 182
 #define ANTAL_HOLD 14
-
 #define DAG_LAENGDE 4
 #define DATO_LAENGDE 6
 #define TIDSPUNKT_LAENGDE 6
@@ -22,7 +21,7 @@ struct kamp{
     char ugedag[DAG_LAENGDE];
     char dato[DATO_LAENGDE];
     char tidspunkt[TIDSPUNKT_LAENGDE];
-    char hjemmebaneHold[HOLDNAVN_LAENGDE];
+    char hjemmebaneHold[HOLDNAVN_LAENGDE]; 
     char udebaneHold[HOLDNAVN_LAENGDE];
     int hjemmeScore;
     int udeScore;
@@ -45,45 +44,56 @@ void print_games_played(kamp *kampe);
 void sum_games(kamp *kampe, hold *hold);
 void input_game(hold *hold, char *is, int point, int holdScoret, int modstanderScoret);
 int find_index(hold *hold, char *input);
-char* allocate_team_name(int laengde);
 int hash_function(const char *is);
-void print_team_standings(hold *hold);
+char* allocate_team_name(int laengde);
 int compare_teams(const void *p1, const void *p2);
+void print_team_standings(hold *hold);
+void free_dynamic_memory(hold *holdene);
 
+/* Main - læser data, summere spillene, printer endelige resultater */
 int main() {
-
     kamp kampe[ANTAL_KAMPE];
     hold holdene[ANTAL_HOLD];
 
     read_data(kampe); 
     sum_games(kampe, holdene);
     print_team_standings(holdene);
+    free_dynamic_memory(holdene);
 
     return EXIT_SUCCESS;
 }
 
+/* Her indlæses dataen fra .txt filen */
 void read_data(kamp *kampe){
     char buff[1000];
     int i;
     FILE *fp;
 
     fp = fopen("files/kampe-2019-2020.txt", "r");
-
+    if (fp == NULL){
+        printf("Kunne ikke åbne filen\n");
+        exit(EXIT_FAILURE);
+    }
+    
     printf("Dag     Dato   Kl.        Hold        Score   Tilskuere\n");
     printf("-------------------------------------------------------\n");
     for (i = 0; i < ANTAL_KAMPE; i++){
         data(fp, buff, &kampe[i]);
     }
     printf("-------------------------------------------------------\n");
+    
     fclose(fp);
+    fp = NULL;
 }
 
+/* Her scannes og printes .txt filen */
 void data(FILE *fp, char *buff, kamp *kampe){
     fgets(buff, 1000, fp);
     sscanf(buff, "%[^ ] %[^ ] %[^ ] %[^ ] - %[^ ] %d - %d %d", kampe->ugedag, kampe->dato, kampe->tidspunkt, kampe->hjemmebaneHold, kampe->udebaneHold, &kampe->hjemmeScore, &kampe->udeScore, &kampe->tilskuertal);
-    /* print_games_played(kampe); */
+    print_games_played(kampe);
 }
 
+/* Print funktion til .txt filen */
 void print_games_played(kamp *kampe) {
     printf("%-8s", kampe->ugedag);
     printf("%s ", kampe->dato);
@@ -95,6 +105,7 @@ void print_games_played(kamp *kampe) {
     printf("     %d\n", kampe->tilskuertal);
 }
 
+/* I denne funktion bliver point talt sammen til holdene */
 void sum_games(kamp *kampe, hold *holdene){
     int hjemmeholdPoint, udeholdPoint, i;
 
@@ -117,6 +128,7 @@ void sum_games(kamp *kampe, hold *holdene){
     qsort(holdene, ANTAL_HOLD, sizeof(hold), &compare_teams);
 }
 
+/* Denne funktion er til associativt input af hold navnene */
 void input_game(hold *holdene, char *is, int point, int holdScoret, int modstanderScoret){
     int index;
     index = find_index(holdene, is);
@@ -134,6 +146,10 @@ void input_game(hold *holdene, char *is, int point, int holdScoret, int modstand
         }
         
         holdene[index].holdnavn = allocate_team_name(strlen(is));
+        if(holdene[index].holdnavn == NULL){
+            printf("Kan ikke allokere hukkomelse.\n");
+            exit(EXIT_FAILURE);
+        }
         strcpy(holdene[index].holdnavn, is);
 
         holdene[index].point = point;
@@ -159,11 +175,6 @@ int find_index(hold *holdene, char *input){
     }
 }
 
-char* allocate_team_name(int laengde){
-    char *holdnavn = (char *) malloc(laengde * sizeof(char));
-    return holdnavn;
-}
-
 /* Hash funktion - hjælp modtaget fra gruppemedlem (Arthur Osnes) */
 int hash_function(const char *is){
     int index, laengde;
@@ -172,15 +183,14 @@ int hash_function(const char *is){
     return (index % ANTAL_HOLD);
 }
 
-void print_team_standings(hold *holdene){
-    int i;
-    printf(" Holdnavn     Point     Mål-af-hold   Mål-mod-hold\n");
-    for (i = 0; i < ANTAL_HOLD; i++){
-        printf("   %-8s %5d %12d %13d\n", holdene[i].holdnavn, holdene[i].point, holdene[i].holdScoret, holdene[i].modstanderScoret);
-    }
+/* Pladser allokeres til hold navnene */
+char* allocate_team_name(int laengde){
+    char *holdnavn = (char *) malloc(laengde * sizeof(char));
+    return holdnavn;
 }
 
-/* Taget fra tidligere opgave om spillekort (12.4), med omdøbning af variable */
+/* Taget fra tidligere afleveringsopgave om spillekort (12.4), med omdøbning af variable */
+/* Holdene sammenlignes, for at finde ud af hvilket hold har flest point */
 int compare_teams(const void *p1, const void *p2){
     hold *hp1 = (hold*)p1, *hp2 = (hold*)p2;
     int result;
@@ -203,4 +213,23 @@ int compare_teams(const void *p1, const void *p2){
         }
     }
     return result;
+}
+
+/* Efterspurgt print af hold stillinger udskrives i denne funktion */
+void print_team_standings(hold *holdene){
+    int i;
+    char holdnavn[9] = {"Holdnavn"}, point[6] = {"Point"}, maalAfHold[13] = {"Mål-af-hold"}, maalModHold[14] = {"Mål-mod-hold"};
+    printf("%-10s %7s %16s %15s\n", holdnavn, point, maalAfHold, maalModHold);
+    for (i = 0; i < ANTAL_HOLD; i++){
+        printf("  %-8s %5d %12d %13d\n", holdene[i].holdnavn, holdene[i].point, holdene[i].holdScoret, holdene[i].modstanderScoret);
+    }
+}
+
+/* Her frigøres den dynamisk allokerede hukkomelse, brugt til holdnavnene */
+void free_dynamic_memory(hold *holdene){
+    int i;
+    for (i = 0; i < ANTAL_HOLD; i++){
+        free(holdene[i].holdnavn);
+        holdene[i].holdnavn = NULL;
+    }
 }
